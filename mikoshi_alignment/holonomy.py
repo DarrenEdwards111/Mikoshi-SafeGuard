@@ -5,7 +5,7 @@ update space, the model may be cycling through states that game the reward
 signal.  A flat connection (zero curvature) guarantees path-independence,
 ruling out such exploits.
 
-Reference: N-Frame theory (Edwards, 2023, 2024, 2025).
+Reference: geometric safety theory.
 
 Copyright 2025 Mikoshi Ltd. Apache-2.0 License.
 """

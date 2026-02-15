@@ -1,6 +1,6 @@
 """Guard 1: Honesty / Positivity — TNN checks on attribution matrices.
 
-From Chapter 9 of N-Frame theory (Edwards, 2023, 2024, 2025).
+From Chapter 9 of geometric safety theory.
 
 A totally non-negative (TNN) attribution matrix means every minor is ≥ 0,
 ensuring the model's stated reasons faithfully reflect its actual computations.

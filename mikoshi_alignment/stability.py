@@ -5,7 +5,7 @@ two space-time regions.  Here, the *interior* is the model's capability space
 and the *exterior* is the safety boundary.  The wall's tension must balance
 curvature to prevent capability escape.
 
-Reference: N-Frame theory (Edwards, 2023, 2024, 2025).
+Reference: geometric safety theory.
 
 Copyright 2025 Mikoshi Ltd. Apache-2.0 License.
 """

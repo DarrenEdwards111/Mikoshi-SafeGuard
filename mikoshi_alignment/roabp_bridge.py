@@ -4,7 +4,7 @@ Read-Once Algebraic Branching Programs (ROABPs) provide a polynomial-complexity
 framework for analysing attention mechanisms.  This module decomposes attention
 patterns into approximate ROABPs and applies TNN checks per head.
 
-Reference: N-Frame Chapter 7 (Edwards, 2023, 2024, 2025).
+Reference: geometric safety theory.
 
 Copyright 2025 Mikoshi Ltd. Apache-2.0 License.
 """

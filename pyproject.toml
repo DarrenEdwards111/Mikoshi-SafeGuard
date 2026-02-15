@@ -5,12 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mikoshi-alignment"
 version = "0.1.0"
-description = "Geometric safety verification for AI systems — Tri-Guard framework grounded in N-Frame physics"
+description = "Geometric safety verification for AI systems"
 authors = [{name = "Mikoshi Ltd", email = "mikoshiuk@gmail.com"}]
 license = {text = "Apache-2.0"}
 requires-python = ">=3.9"
 readme = "README.md"
-keywords = ["ai-safety", "alignment", "tri-guard", "n-frame", "geometric-verification"]
+keywords = ["ai-safety", "alignment", "tri-guard", "geometric-safety", "geometric-verification"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",

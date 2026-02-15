@@ -3,7 +3,7 @@
 The mathematical core: shifted partial derivative matrices, inference polytopes,
 and admissible region computations.
 
-Reference: N-Frame Chapter 7 (Edwards, 2023, 2024, 2025).
+Reference: geometric safety theory.
 
 Copyright 2025 Mikoshi Ltd. Apache-2.0 License.
 """

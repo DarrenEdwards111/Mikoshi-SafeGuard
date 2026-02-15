@@ -1,8 +1,8 @@
 # Theoretical Foundation
 
-## N-Frame Theory
+## geometric safety Theory
 
-The Tri-Guard safety framework is grounded in N-Frame physics (Edwards, 2023, 2024, 2025),
+The Tri-Guard safety framework is based on geometric safety theory,
 which provides a geometric foundation for AI alignment.
 
 ### Key Results
@@ -25,9 +25,6 @@ The Shifted Partial Derivative Polytope (SPDP) framework from Chapter 7 provides
 
 ### References
 
-- Edwards, D. (2023). *N-Frame: A Geometric Framework for Physics and Information*.
-- Edwards, D. (2024). *Extensions to N-Frame Theory: Applications in AI Safety*.
-- Edwards, D. (2025). *Tri-Guard: Geometric Safety Verification for AI Systems*.
 
 ### Citation
 

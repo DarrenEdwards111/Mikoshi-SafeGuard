@@ -1,7 +1,7 @@
 """
 Mikoshi AI Alignment — Geometric safety verification for AI systems.
 
-Tri-Guard framework grounded in N-Frame physics (Edwards, 2023, 2024, 2025).
+Tri-Guard geometric safety framework.
 
 Three guards:
     1. Honesty Guard — positivity / TNN checks on attribution matrices

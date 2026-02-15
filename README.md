@@ -1,6 +1,6 @@
 # Mikoshi AI Alignment
 
-**Geometric safety verification for AI systems — grounded in N-Frame physics**
+**Geometric safety verification for AI systems**
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
@@ -9,7 +9,7 @@
 
 ## Overview
 
-Mikoshi AI Alignment implements the **Tri-Guard** safety framework, a mathematically rigorous approach to AI alignment verification based on N-Frame theory (Edwards, 2023, 2024, 2025).
+Mikoshi AI Alignment implements the **Tri-Guard** safety framework, a mathematically rigorous approach to AI alignment verification.
 
 Unlike ad-hoc alignment approaches that rely on RLHF tuning or output filtering, Tri-Guard provides **geometric guarantees** at the reasoning level — verifying that a model's internal computations are honest, bounded, and exploit-free.
 
@@ -131,13 +131,13 @@ result = safety(input_data)
 | RLHF | Statistical | Behavioural | Human preferences |
 | Output filtering | None | Surface | Pattern matching |
 | Constitutional AI | Soft | Behavioural | Rules |
-| **Tri-Guard** | **Geometric** | **Reasoning** | **N-Frame physics** |
+| **Tri-Guard** | **Geometric** | **Reasoning** | **Geometric theory** |
 
 Tri-Guard doesn't replace behavioural alignment — it adds a mathematically grounded verification layer beneath it.
 
 ## Theoretical Foundation
 
-The framework is grounded in N-Frame theory:
+The framework is grounded in geometric safety theory:
 
 - **Honesty** — Total non-negativity of Jacobian/attribution matrices (Chapter 9)
 - **Stability** — Israel thin-wall junction conditions bounding capability energy
@@ -148,9 +148,6 @@ See [paper/README.md](paper/README.md) for references.
 
 ### References
 
-- Edwards, D. (2023). *N-Frame: A Geometric Framework for Physics and Information*
-- Edwards, D. (2024). *Extensions to N-Frame Theory: Applications in AI Safety*
-- Edwards, D. (2025). *Tri-Guard: Geometric Safety Verification for AI Systems*
 
 ## API Reference
 
@@ -193,4 +190,4 @@ Apache 2.0 — see [LICENSE](LICENSE).
 
 Developed by **Mikoshi Ltd**.
 
-Theoretical foundation: N-Frame theory (Edwards, 2023, 2024, 2025).
+Developed by Mikoshi Ltd.
