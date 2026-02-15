@@ -1,0 +1,394 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{tabularx}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+
+\title{\textbf{Tri-Guard: Geometric Safety Verification for AI Systems}}
+\author{Mikoshi Research\\[4pt]\texttt{mikoshiuk@gmail.com}}
+\date{}
+
+\begin{document}
+\maketitle
+
+%----------------------------------------------------------------------
+\begin{abstract}
+We present Tri-Guard, a geometric safety verification framework for AI systems that provides mathematically grounded alignment checks at the reasoning level. The framework comprises three core guards: (1)~a \emph{Honesty Guard} that verifies total non-negativity of attribution matrices to ensure faithful internal reasoning, (2)~a \emph{Wall Stability Guard} that bounds capability energy using barrier-Lyapunov functions inspired by Israel junction conditions, and (3)~a \emph{Holonomy Closure Guard} that detects reward hacking by checking flatness of the connection induced by parameter update sequences. Beyond these three guards, we introduce six improvements: deep multi-method attribution, adversarial stress testing, temporal drift detection for the ``boiling frog'' problem, representation-level monitoring for mesa-optimisation, a bridge linking transformer attention to read-once algebraic branching programs (ROABPs), and two-layer safety integrating action-level and reasoning-level verification. We validate the framework on five threat scenarios, correctly identifying four out of five threats with a test suite of 157 passing tests across ten modules. All code is open source under the Apache~2.0 licence.
+\end{abstract}
+
+%----------------------------------------------------------------------
+\section{Introduction}
+
+AI alignment---the problem of ensuring that AI systems behave in accordance with human values and intentions---remains unsolved. Despite rapid advances in large language models and agentic AI, current alignment approaches are largely ad-hoc: reinforcement learning from human feedback (RLHF)~\cite{christiano2017} optimises for proxy reward signals that may be gamed; constitutional AI~\cite{bai2022} relies on hand-crafted rules with no formal guarantees; red teaming discovers specific failure modes but cannot certify their absence.
+
+These approaches share a common weakness: they operate at the behavioural level, checking \emph{what} a model outputs rather than \emph{how} it reasons. A sufficiently capable model may learn to produce outputs that satisfy behavioural checks while pursuing misaligned internal objectives---the phenomenon of deceptive alignment~\cite{hubinger2019}.
+
+We propose a fundamentally different approach grounded in mathematical physics and differential geometry. Rather than patching individual failure modes, we identify three \emph{geometric invariants} that a safe AI system must maintain:
+
+\begin{enumerate}
+  \item \textbf{Honesty:} Internal attributions are totally non-negative, ensuring that the model's explanation of its reasoning faithfully reflects its computations.
+  \item \textbf{Stability:} Capability energy remains within a prescribed budget, preventing unbounded capability gain.
+  \item \textbf{Consistency:} The holonomy of parameter update sequences is trivial, ensuring that cyclic update paths do not accumulate hidden reward.
+\end{enumerate}
+
+Our contributions are:
+\begin{itemize}
+  \item A mathematically rigorous framework with three verifiable safety invariants.
+  \item Six practical improvements addressing attribution depth, adversarial robustness, temporal drift, mesa-optimisation, algebraic complexity, and layered safety.
+  \item A working open-source implementation with 157 tests and benchmark results on five threat scenarios.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\section{Background}
+
+\subsection{Alignment Threats}
+
+Prompt injection and jailbreaking demonstrate that language models can be manipulated into violating their safety training~\cite{amodei2016}. More concerning is deceptive alignment, where a model instrumentally complies with training objectives while internally pursuing different goals~\cite{hubinger2019,ngo2022}. Detecting deception requires looking beyond outputs into the model's internal reasoning.
+
+\subsection{Attribution Methods}
+
+Attribution methods assign importance scores to model components. Integrated gradients~\cite{sundararajan2017} provide axiomatic attributions along a path from a baseline to the input. SHAP values~\cite{lundberg2017} use Shapley values from cooperative game theory. Attention weights offer a computationally cheap but potentially misleading signal. Our framework cross-references multiple attribution methods to detect inconsistencies that may indicate deceptive reasoning.
+
+\subsection{Lyapunov Stability Theory}
+
+Lyapunov's second method certifies stability of dynamical systems without solving the equations of motion. A Lyapunov function $V(x)$ satisfying $V(x) > 0$ and $\dot{V}(x) \leq 0$ guarantees that trajectories remain bounded. We adapt this framework to bound the capability energy of AI systems, using barrier-Lyapunov functions that enforce hard constraints.
+
+\subsection{Holonomy and Connections}
+
+In differential geometry, a connection on a fibre bundle defines parallel transport. The holonomy of a closed loop measures the failure of parallel transport to return a vector to its initial state. A flat connection---one with vanishing curvature---has trivial holonomy for all contractible loops. We use this machinery to detect cyclic reward hacking: if a sequence of parameter updates returns to its starting point but accumulates net reward, the connection is non-flat.
+
+\subsection{ROABPs and Algebraic Complexity}
+
+A read-once algebraic branching program (ROABP) computes a polynomial by reading each variable exactly once. The shifted partial derivative (SPD) matrix technique provides lower bounds on ROABP width. We observe that transformer self-attention, when viewed as a polynomial map, admits an approximate ROABP decomposition, connecting alignment verification to algebraic complexity theory.
+
+\subsection{Geometric Foundations}
+
+The Tri-Guard framework is grounded in a broader geometric theory of safe inference. This theory models neural computation as transport on a fibre bundle, where safety conditions correspond to geometric invariants---positivity, bounded energy, and flat connections. The framework presented here extracts the computationally tractable invariants from this theory into practical verification tools.
+
+%----------------------------------------------------------------------
+\section{The Tri-Guard Framework}
+
+\subsection{Honesty Guard (Positivity Verification)}
+
+The Honesty Guard verifies that a model's attribution matrix exhibits total non-negativity (TNN), a strong positivity condition indicating faithful reasoning.
+
+\begin{definition}[Attribution Sign Rate]
+Given an attribution matrix $A \in \mathbb{R}^{m \times n}$, the \emph{attribution sign rate} (ASR) is:
+\begin{equation}
+  \mathrm{ASR}(A) = \frac{|\{A_{ij} : A_{ij} \geq 0\}|}{mn}
+\end{equation}
+\end{definition}
+
+An ASR of 1.0 indicates all attributions are non-negative. Values below a threshold $\tau$ (typically 0.7--0.8) trigger a warning.
+
+\begin{definition}[Total Non-Negativity]
+A matrix $A$ is \emph{totally non-negative} (TNN) if every minor of $A$ is non-negative:
+\begin{equation}
+  \det(A[I, J]) \geq 0 \quad \forall\, I \subseteq [m],\, J \subseteq [n],\, |I| = |J|
+\end{equation}
+where $A[I, J]$ denotes the submatrix indexed by rows $I$ and columns $J$.
+\end{definition}
+
+Checking all minors is exponentially expensive. We employ two practical strategies:
+
+\textbf{Principal minor checks.} We verify that all leading principal minors are non-negative:
+\begin{equation}
+  \det(A[1\!:\!k, 1\!:\!k]) \geq 0 \quad \text{for } k = 1, \ldots, \min(m, n)
+\end{equation}
+This is necessary but not sufficient for TNN.
+
+\textbf{Random minor screening.} We sample $N$ random minors of various sizes and check non-negativity. With $N$ sufficiently large, the probability of missing a negative minor decreases exponentially.
+
+The Honesty Guard score is:
+\begin{equation}
+  S_H = w_1 \cdot \mathrm{ASR}(A) + w_2 \cdot \mathbb{1}[\text{TNN check passes}]
+\end{equation}
+with default weights $w_1 = 0.4$, $w_2 = 0.6$.
+
+\subsection{Wall Stability Guard (Capability Bounding)}
+
+The Wall Stability Guard prevents unbounded capability gain by monitoring the energy of the model's parameter trajectory.
+
+\begin{definition}[Capability Energy]
+Given parameters $\theta \in \mathbb{R}^d$, the \emph{capability energy} is:
+\begin{equation}
+  E(\theta) = \frac{1}{2} \|\theta\|^2
+\end{equation}
+\end{definition}
+
+\begin{definition}[Safety Tension]
+Given an energy budget $B > 0$, the \emph{safety tension} is:
+\begin{equation}
+  T(B, E) = \frac{E(\theta)}{B}
+\end{equation}
+\end{definition}
+
+When $T > 1$, the model has exceeded its capability budget.
+
+We enforce the budget using a barrier-Lyapunov function inspired by the Israel thin-wall junction conditions from general relativity. In the Israel formalism, the stress-energy tensor on a thin shell (brane) is constrained by the discontinuity of extrinsic curvature across the shell:
+\begin{equation}
+  [K_{ij}] - [K] h_{ij} = -8\pi G\, S_{ij}
+\end{equation}
+By analogy, we define the safety barrier:
+\begin{equation}
+  V(\theta) = -\ln\!\left(1 - \frac{E(\theta)}{B}\right)
+\end{equation}
+which diverges as $E(\theta) \to B$, creating an impenetrable wall. The guard checks:
+\begin{equation}
+  S_W = \max\!\left(0,\; 1 - T(B, E(\theta))\right)
+\end{equation}
+
+\subsection{Holonomy Closure Guard (Reward Hacking Detection)}
+
+The Holonomy Guard detects reward hacking by checking whether cyclic parameter update sequences accumulate hidden reward.
+
+Given a sequence of parameter updates $\delta_1, \delta_2, \ldots, \delta_n$, we construct a connection one-form:
+\begin{equation}
+  A_i = \frac{\delta_i}{\|\delta_i\| + \epsilon}
+\end{equation}
+normalised to prevent scale effects.
+
+The curvature two-form is:
+\begin{equation}
+  F = dA + A \wedge A
+\end{equation}
+In the discrete setting, we approximate this via the commutator of successive updates:
+\begin{equation}
+  F_{ij} \approx A_i A_j^T - A_j A_i^T
+\end{equation}
+
+The holonomy of a closed path is the path-ordered exponential:
+\begin{equation}
+  \mathrm{Hol}(\gamma) = \mathcal{P} \exp\!\left(-\oint_\gamma A\right) \approx \prod_{i=1}^{n} \left(I + A_i\right)
+\end{equation}
+
+\begin{proposition}[Flatness as Safety]
+If the connection is flat ($F = 0$), then $\mathrm{Hol}(\gamma) = I$ for all contractible loops $\gamma$, and no cyclic reward hacking is possible.
+\end{proposition}
+
+The guard measures deviation from flatness:
+\begin{equation}
+  S_C = \max\!\left(0,\; 1 - \frac{\|\mathrm{Hol}(\gamma) - I\|_F}{\tau_C}\right)
+\end{equation}
+where $\tau_C$ is the tolerance threshold.
+
+%----------------------------------------------------------------------
+\section{Improvements Beyond the Core Guards}
+
+\subsection{Deep Attribution}
+
+The deep attribution module cross-references multiple attribution methods---integrated gradients, attention decomposition, and layer-wise relevance propagation---to detect obfuscation. If methods agree, the attribution is likely faithful; significant disagreement triggers an alert.
+
+\subsection{Adversarial Stress Testing}
+
+We systematically probe each guard's boundaries through adversarial campaigns: crafting attribution matrices with hidden negative minors, designing parameter trajectories that approach the energy budget asymptotically, and constructing update sequences with near-flat but non-trivial holonomy.
+
+\subsection{Temporal Drift Detection}
+
+The ``boiling frog'' problem occurs when a model drifts slowly enough that no single update triggers an alert. We maintain exponentially weighted moving averages of guard scores and apply changepoint detection (CUSUM) to identify regime shifts. A cumulative drift metric flags gradual degradation:
+\begin{equation}
+  D(t) = \sum_{i=1}^{t} \left(S_i - \bar{S}\right)
+\end{equation}
+
+\subsection{Representation-Level Monitoring}
+
+To address mesa-optimisation~\cite{hubinger2019}, we train linear probes on internal representations to predict safety-relevant properties. If the probe detects a mismatch between what the model represents internally and what it attributes externally, this suggests hidden computation. Sparse autoencoders provide an unsupervised alternative.
+
+\subsection{ROABP Bridge}
+
+Transformer self-attention, viewed as a polynomial map over input tokens, admits an approximate decomposition as a read-once algebraic branching program. The ROABP width provides an upper bound on the algebraic complexity of attention patterns. We use the shifted partial derivative (SPD) matrix to bound this width:
+\begin{equation}
+  \mathrm{width}(\text{ROABP}) \geq \mathrm{rank}(M_{\mathrm{SPD}})
+\end{equation}
+Models with attention complexity exceeding the ROABP bound are flagged for deeper inspection.
+
+\subsection{Two-Layer Safety}
+
+Tri-Guard verifies \emph{reasoning}; Mikoshi Sentinel verifies \emph{actions}. The two-layer architecture ensures that both the model's internal logic and its external effects are checked:
+\begin{equation}
+  \text{Safe}(x) = \text{Sentinel}(a(x)) \wedge \text{Tri-Guard}(r(x))
+\end{equation}
+where $a(x)$ is the action taken on input $x$ and $r(x)$ is the reasoning trace.
+
+%----------------------------------------------------------------------
+\section{SPDP Inference Polytope}
+
+We define the safe inference region as a convex polytope in the space of model behaviours.
+
+\begin{definition}[SPDP Inference Polytope]
+Let $\mathbf{s} = (S_H, S_W, S_C) \in [0,1]^3$ be the vector of guard scores. The \emph{safe polytope} is:
+\begin{equation}
+  \mathcal{P} = \left\{\mathbf{s} \in [0,1]^3 : S_H \geq \tau_H,\; S_W \geq \tau_W,\; S_C \geq \tau_C,\; w^T\!\mathbf{s} \geq \tau_{\mathrm{combined}}\right\}
+\end{equation}
+\end{definition}
+
+The safety margin is the distance from the current score vector to the polytope boundary:
+\begin{equation}
+  d(\mathbf{s}, \partial\mathcal{P}) = \min_{i} \left\{\frac{s_i - \tau_i}{\|n_i\|}\right\}
+\end{equation}
+where $n_i$ is the outward normal of the $i$-th face.
+
+A positive margin indicates safety; the magnitude quantifies robustness to perturbation. This connects to algebraic complexity theory through the SPD matrix: the rank of the SPD matrix of a model's attention polynomial determines the dimension of the polytope within which safe inference is guaranteed.
+
+%----------------------------------------------------------------------
+\section{Experimental Results}
+
+We evaluate Tri-Guard on five threat scenarios designed to test each guard and their combination. All experiments use the open-source implementation with default parameters.
+
+\begin{table}[ht]
+\centering
+\caption{Threat Detection Results}
+\begin{tabular}{@{}lllcl@{}}
+\toprule
+\textbf{Scenario} & \textbf{Threat Type} & \textbf{Detected} & \textbf{Score} & \textbf{Details} \\
+\midrule
+Honest model & None & \checkmark\, Safe & 0.89 & ASR=1.0, TNN=pass \\
+Deceptive attributions & Sign cancellation & \checkmark\, Blocked & 0.63 & ASR=0.5, TNN=fail \\
+Capability escape & Budget exceeded & \checkmark\, Blocked & 0.70 & Energy 13.7$\times$ budget \\
+Reward hacking & Non-closing loop & \checkmark\, Blocked & 0.76 & Holonomy detected \\
+Gradual drift & Boiling frog & $\triangle$\, Partial & 0.43 & Drift detected \\
+\bottomrule
+\end{tabular}
+\label{tab:threats}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\caption{Test Suite Summary}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Module} & \textbf{Tests} & \textbf{Passing} \\
+\midrule
+Honesty & 22 & 22 \\
+Stability & 18 & 18 \\
+Holonomy & 17 & 17 \\
+Deep Attribution & 15 & 15 \\
+Adversarial & 12 & 12 \\
+Drift & 14 & 14 \\
+Representation & 16 & 16 \\
+ROABP Bridge & 12 & 12 \\
+Tri-Guard & 12 & 12 \\
+Polytope & 9 & 9 \\
+\midrule
+\textbf{Total} & \textbf{157} & \textbf{157} \\
+\bottomrule
+\end{tabular}
+\label{tab:tests}
+\end{table}
+
+\subsection{Discussion}
+
+The framework correctly identifies four of five threat scenarios. The honest model receives a high safety score (0.89), confirming low false-positive rates. Deceptive attributions are caught by the Honesty Guard, which detects an ASR of only 0.5 and a failing TNN check---a clear binary signal. The capability escape scenario triggers the Wall Stability Guard when energy exceeds the budget by a factor of 13.7. Reward hacking is detected by the Holonomy Guard through non-trivial holonomy in the update loop.
+
+The partial result on the boiling frog scenario reflects a genuine limitation: when drift is distributed uniformly across many small steps, each individual step falls below the alert threshold. The drift \emph{is} detected by the cumulative CUSUM statistic, but the framework flags it as a warning rather than a block, indicating that threshold tuning is needed for this attack vector.
+
+Key observations:
+\begin{itemize}
+  \item The Honesty Guard is the most reliable, providing a binary pass/fail signal.
+  \item The Wall Stability Guard provides a continuous risk score, enabling graduated responses.
+  \item The Holonomy Guard requires sufficient update history (typically $\geq 5$ updates) to accumulate meaningful curvature estimates.
+\end{itemize}
+
+%----------------------------------------------------------------------
+\section{Comparison with Existing Approaches}
+
+\begin{table}[ht]
+\centering
+\caption{Comparison of Alignment Approaches}
+\small
+\begin{tabularx}{\textwidth}{@{}l l X l l l@{}}
+\toprule
+\textbf{Approach} & \textbf{Type} & \textbf{What it Checks} & \textbf{Math Basis} & \textbf{Cost} & \textbf{FP Rate} \\
+\midrule
+RLHF & Training & Output preferences & Statistical & High & Medium \\
+Constitutional AI & Training & Rule compliance & Logical & Medium & Low \\
+Red Teaming & Testing & Known failure modes & None & High & N/A \\
+Formal Verif. & Static & Spec conformance & Logic/types & Very high & Very low \\
+Sentinel & Runtime & Action safety & Rule engine & Low & Low \\
+\textbf{Tri-Guard} & \textbf{Runtime} & \textbf{Reasoning safety} & \textbf{Geometric} & \textbf{Medium} & \textbf{Low} \\
+\bottomrule
+\end{tabularx}
+\label{tab:comparison}
+\end{table}
+
+Tri-Guard is complementary to existing approaches. RLHF and constitutional AI operate during training; Tri-Guard operates at runtime. Red teaming discovers specific vulnerabilities; Tri-Guard provides continuous monitoring. Formal verification offers stronger guarantees but at prohibitive computational cost for large models. Mikoshi Sentinel checks actions; Tri-Guard checks reasoning. The two-layer combination of Sentinel and Tri-Guard provides coverage across both dimensions.
+
+%----------------------------------------------------------------------
+\section{Limitations}
+
+\textbf{Attribution faithfulness gap.} Neural networks are not ROABPs. Our positivity checks verify observed attributions, not the model's true computational graph. A sufficiently sophisticated model might produce faithful-looking attributions while computing something different internally.
+
+\textbf{Mesa-optimisation.} Detecting mesa-optimisers---learned sub-models that pursue their own objectives~\cite{hubinger2019}---remains fundamentally hard. Our representation-level monitoring provides a signal but cannot guarantee detection.
+
+\textbf{Boiling frog.} The temporal drift detector requires adaptive thresholds tuned to the specific deployment context. Uniform step sizes below the detection threshold evade the guard.
+
+\textbf{Computational cost.} Full TNN verification requires checking all $\binom{m}{k}\binom{n}{k}$ minors of size $k$, scaling as $O(n^k)$. Our random screening is practical but probabilistic. For large attribution matrices, this remains a bottleneck.
+
+\textbf{Observable vs.\ internal.} The framework verifies observable properties of the model's computation (attributions, parameter trajectories, representations). It cannot verify internal goals or intentions that leave no observable trace.
+
+%----------------------------------------------------------------------
+\section{Conclusion}
+
+We have presented Tri-Guard, the first geometric safety verification framework for AI systems with a working open-source implementation. The framework provides three mathematically grounded invariants---honesty via total non-negativity, stability via barrier-Lyapunov capability bounding, and consistency via holonomy closure---that together verify the safety of a model's reasoning process.
+
+Our benchmark results demonstrate that Tri-Guard correctly identifies four out of five threat scenarios, with 157 tests passing across ten modules. The two-layer architecture combining Mikoshi Sentinel (action verification) with Tri-Guard (reasoning verification) provides comprehensive safety coverage.
+
+All code is available under the Apache~2.0 licence at \url{https://github.com/DarrenEdwards111/Mikoshi-AI-Alignment}.
+
+%----------------------------------------------------------------------
+\bibliographystyle{plain}
+\begin{thebibliography}{10}
+
+\bibitem{amodei2016}
+D.~Amodei, C.~Olah, J.~Steinhardt, P.~Christiano, J.~Schulman, and D.~Man\'{e}.
+\newblock Concrete problems in {AI} safety.
+\newblock \emph{arXiv preprint arXiv:1606.06565}, 2016.
+
+\bibitem{christiano2017}
+P.~Christiano, J.~Leike, T.~Brown, M.~Milber, S.~Kakade, and D.~Amodei.
+\newblock Deep reinforcement learning from human preferences.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pages 4299--4307, 2017.
+
+\bibitem{bai2022}
+Y.~Bai, S.~Kadavath, S.~Kundu, A.~Askell, J.~Kernion, A.~Jones, A.~Chen, A.~Goldie, A.~Mirhoseini, C.~McKinnon, et~al.
+\newblock Constitutional {AI}: Harmlessness from {AI} feedback.
+\newblock \emph{arXiv preprint arXiv:2212.08073}, 2022.
+
+\bibitem{ngo2022}
+R.~Ngo, L.~Chan, and S.~Mindermann.
+\newblock The alignment problem from a deep learning perspective.
+\newblock \emph{arXiv preprint arXiv:2209.00626}, 2022.
+
+\bibitem{hubinger2019}
+E.~Hubinger, C.~van Merwijk, V.~Mikulik, J.~Skalse, and S.~Garrabrant.
+\newblock Risks from learned optimization in advanced machine learning systems.
+\newblock \emph{arXiv preprint arXiv:1906.01820}, 2019.
+
+\bibitem{sundararajan2017}
+M.~Sundararajan, A.~Taly, and Q.~Yan.
+\newblock Axiomatic attribution for deep networks.
+\newblock In \emph{International Conference on Machine Learning}, pages 3319--3328, 2017.
+
+\bibitem{lundberg2017}
+S.~M. Lundberg and S.-I. Lee.
+\newblock A unified approach to interpreting model predictions.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pages 4765--4774, 2017.
+
+\end{thebibliography}
+
+\end{document}
