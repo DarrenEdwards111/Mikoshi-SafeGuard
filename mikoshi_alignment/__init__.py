@@ -1,5 +1,5 @@
 """
-Mikoshi AI Alignment — Geometric safety verification for AI systems.
+Mikoshi SafeGuard — Geometric safety verification for AI systems.
 
 Tri-Guard geometric safety framework.
 

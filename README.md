@@ -1,4 +1,4 @@
-# Mikoshi AI Alignment
+# Mikoshi SafeGuard
 
 **Geometric safety verification for AI systems**
 
@@ -9,7 +9,7 @@
 
 ## Overview
 
-Mikoshi AI Alignment implements the **Tri-Guard** safety framework, a mathematically rigorous approach to AI alignment verification.
+Mikoshi SafeGuard implements the **Tri-Guard** safety framework, a mathematically rigorous approach to AI alignment verification.
 
 Unlike ad-hoc alignment approaches that rely on RLHF tuning or output filtering, Tri-Guard provides **geometric guarantees** at the reasoning level — verifying that a model's internal computations are honest, bounded, and exploit-free.
 
@@ -41,8 +41,8 @@ pip install mikoshi-alignment
 Or from source:
 
 ```bash
-git clone https://github.com/DarrenEdwards111/Mikoshi-AI-Alignment.git
-cd Mikoshi-AI-Alignment
+git clone https://github.com/DarrenEdwards111/Mikoshi-SafeGuard.git
+cd Mikoshi-SafeGuard
 pip install -e .
 ```
 
@@ -109,7 +109,7 @@ action = guard.enforce(
 
 ## Two-Layer Safety
 
-Mikoshi AI Alignment is designed to work alongside [Mikoshi Sentinel](https://www.npmjs.com/package/mikoshi-sentinel) for **two-layer safety**:
+Mikoshi SafeGuard is designed to work alongside [Mikoshi Sentinel](https://www.npmjs.com/package/mikoshi-sentinel) for **two-layer safety**:
 
 | Layer | Tool | Verifies |
 |-------|------|----------|
