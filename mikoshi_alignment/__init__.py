@@ -1,5 +1,5 @@
 """
-Mikoshi SafeGuard — Geometric safety verification for AI systems.
+Mikoshi SafeGuard — Runtime safety verification for AI systems (geometric).
 
 Tri-Guard geometric safety framework.
 

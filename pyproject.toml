@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mikoshi-safeguard"
 version = "0.1.0"
-description = "Geometric safety verification for AI systems"
+description = "Runtime safety verification for AI systems (geometric)"
 authors = [{name = "Mikoshi Ltd", email = "mikoshiuk@gmail.com"}]
 license = {text = "Apache-2.0"}
 requires-python = ">=3.9"

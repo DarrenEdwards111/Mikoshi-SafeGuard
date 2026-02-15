@@ -1,6 +1,6 @@
 # Mikoshi SafeGuard
 
-**Geometric safety verification for AI systems**
+**Runtime safety verification for AI systems (geometric)**
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
@@ -9,9 +9,21 @@
 
 ## Overview
 
-Mikoshi SafeGuard implements the **Tri-Guard** safety framework, a mathematically rigorous approach to AI alignment verification.
+Mikoshi SafeGuard implements the **Tri-Guard** safety framework — runtime verification that checks whether an AI system's reasoning is honest, bounded, and exploit-free.
 
-Unlike ad-hoc alignment approaches that rely on RLHF tuning or output filtering, Tri-Guard provides **geometric guarantees** at the reasoning level — verifying that a model's internal computations are honest, bounded, and exploit-free.
+Unlike ad-hoc alignment approaches that rely on RLHF tuning or output filtering, Tri-Guard verifies safety **at the reasoning level** using mathematical geometry.
+
+## Why Geometric?
+
+Most AI safety tools check *what a model says*. SafeGuard checks *how it thinks* — using geometry to verify the mathematical structure of its reasoning.
+
+**Honesty → Positivity in matrix space.** When an AI explains its decisions, those explanations form an attribution matrix. If the matrix is "totally non-negative" (all minors ≥ 0), the explanation is faithful — no hidden sign cancellations, no deceptive reasoning. This is a geometric property: the matrix must lie inside a specific region (the positive cone) of matrix space. Step outside, and the model is hiding something.
+
+**Stability → Curved boundaries in parameter space.** An AI's capabilities can be measured as energy in a parameter space. Safety means that energy stays inside a budget — bounded by a Lyapunov barrier surface. Think of it as a curved wall: if the model's capability trajectory hits the wall, it's escaping its safety bounds. The wall's curvature comes from the same physics that governs bubble stability in cosmology (Israel junction conditions).
+
+**Consistency → Curvature on a manifold.** When an AI updates its behaviour over a sequence of steps, those updates trace a path on a mathematical manifold. If you follow the path around a loop and end up somewhere different from where you started, the connection has curvature — and the model found a loophole (reward hacking). A flat connection (zero curvature) means no exploits: updates are path-independent and honest.
+
+**The safe region is a polytope.** The intersection of these three constraints defines a geometric shape — a polytope — in inference space. If the model's reasoning stays inside the polytope, it's safe. The distance from the boundary tells you the safety margin. This is the SPDP (Shifted Partial Derivative Projection) inference polytope.
 
 ## The Three Guards
 
