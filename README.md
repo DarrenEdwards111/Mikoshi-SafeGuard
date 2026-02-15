@@ -70,7 +70,7 @@ pip install mikoshi-alignment[viz]    # polytope visualization
 
 ```python
 import numpy as np
-from mikoshi_alignment import TriGuard
+from mikoshi_safeguard import TriGuard
 
 # Create guard
 guard = TriGuard(
@@ -129,7 +129,7 @@ Mikoshi SafeGuard is designed to work alongside [Mikoshi Sentinel](https://www.n
 | **Reasoning** | Tri-Guard | How the model *thinks* (attributions, updates, representations) |
 
 ```python
-from mikoshi_alignment.sentinel_bridge import TwoLayerSafety
+from mikoshi_safeguard.sentinel_bridge import TwoLayerSafety
 
 safety = TwoLayerSafety(model, sentinel_url="http://localhost:3000")
 result = safety(input_data)
@@ -234,13 +234,13 @@ Results from running the full Tri-Guard verification suite against five threat s
 
 ### Improvements
 
-- `mikoshi_alignment.deep_attribution` — Multi-method attribution
-- `mikoshi_alignment.adversarial` — Stress testing
-- `mikoshi_alignment.drift` — Temporal drift detection
-- `mikoshi_alignment.representation` — Internal monitoring
-- `mikoshi_alignment.roabp_bridge` — ROABP analysis
-- `mikoshi_alignment.sentinel_bridge` — Sentinel integration
-- `mikoshi_alignment.polytope` — SPDP polytope geometry
+- `mikoshi_safeguard.deep_attribution` — Multi-method attribution
+- `mikoshi_safeguard.adversarial` — Stress testing
+- `mikoshi_safeguard.drift` — Temporal drift detection
+- `mikoshi_safeguard.representation` — Internal monitoring
+- `mikoshi_safeguard.roabp_bridge` — ROABP analysis
+- `mikoshi_safeguard.sentinel_bridge` — Sentinel integration
+- `mikoshi_safeguard.polytope` — SPDP polytope geometry
 
 ## Development
 

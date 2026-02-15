@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 from numpy.typing import NDArray
 
-from mikoshi_alignment.utils import matrix_rank_approx
+from mikoshi_safeguard.utils import matrix_rank_approx
 
 
 def spdp_matrix(

@@ -74,7 +74,7 @@ class SentinelBridge:
         dict
             Keys: ``safe``, ``score``.
         """
-        from mikoshi_alignment.honesty import honesty_score
+        from mikoshi_safeguard.honesty import honesty_score
         score = honesty_score(attributions)
         return {"safe": score >= 0.8, "score": score}
 

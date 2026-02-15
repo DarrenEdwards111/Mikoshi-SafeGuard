@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from mikoshi_alignment.honesty import (
+from mikoshi_safeguard.honesty import (
     attribution_sign_rate,
     random_minor_screen,
     principal_minor_check,

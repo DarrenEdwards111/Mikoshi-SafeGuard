@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from mikoshi_alignment.drift import (
+from mikoshi_safeguard.drift import (
     exponential_moving_drift,
     changepoint_detection,
     DriftDetector,

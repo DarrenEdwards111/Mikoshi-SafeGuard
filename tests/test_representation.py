@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from mikoshi_alignment.representation import (
+from mikoshi_safeguard.representation import (
     LinearProbe,
     sparse_autoencoder_features,
     internal_external_agreement,

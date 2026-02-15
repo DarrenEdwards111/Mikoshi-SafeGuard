@@ -1,8 +1,8 @@
 """Example: monitoring model training with drift detection."""
 
 import numpy as np
-from mikoshi_alignment.drift import DriftDetector
-from mikoshi_alignment.stability import WallStabilityGuard
+from mikoshi_safeguard.drift import DriftDetector
+from mikoshi_safeguard.stability import WallStabilityGuard
 
 # Setup
 drift = DriftDetector(threshold=0.05)

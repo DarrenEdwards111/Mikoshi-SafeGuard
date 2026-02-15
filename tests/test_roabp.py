@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from mikoshi_alignment.roabp_bridge import (
+from mikoshi_safeguard.roabp_bridge import (
     attention_to_roabp,
     roabp_rank,
     spdp_rank,

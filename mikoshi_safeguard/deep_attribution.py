@@ -132,7 +132,7 @@ def attribution_agreement_score(attributions_dict: Dict[str, NDArray]) -> float:
     if len(arrays) < 2:
         return 1.0
     # Pairwise cosine similarities
-    from mikoshi_alignment.utils import cosine_similarity
+    from mikoshi_safeguard.utils import cosine_similarity
     sims = []
     for i in range(len(arrays)):
         for j in range(i + 1, len(arrays)):

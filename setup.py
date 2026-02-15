@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="mikoshi-alignment",
+    name="mikoshi-safeguard",
     packages=find_packages(),
 )

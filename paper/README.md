@@ -29,7 +29,7 @@ The Shifted Partial Derivative Polytope (SPDP) framework from Chapter 7 provides
 ### Citation
 
 ```bibtex
-@software{mikoshi_alignment,
+@software{mikoshi_safeguard,
   title={Mikoshi AI Alignment: Geometric Safety Verification},
   author={{Mikoshi Ltd}},
   year={2025},

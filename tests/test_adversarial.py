@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from mikoshi_alignment.adversarial import (
+from mikoshi_safeguard.adversarial import (
     generate_adversarial_inputs,
     fuzz_attribution,
     guard_robustness_score,

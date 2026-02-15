@@ -14,9 +14,9 @@ from typing import Any, Callable, Dict, List, Optional
 import numpy as np
 from numpy.typing import NDArray
 
-from mikoshi_alignment.honesty import HonestyGuard
-from mikoshi_alignment.stability import WallStabilityGuard
-from mikoshi_alignment.holonomy import HolonomyGuard
+from mikoshi_safeguard.honesty import HonestyGuard
+from mikoshi_safeguard.stability import WallStabilityGuard
+from mikoshi_safeguard.holonomy import HolonomyGuard
 
 
 class TriGuard:

@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from mikoshi_alignment.deep_attribution import (
+from mikoshi_safeguard.deep_attribution import (
     integrated_gradients,
     attention_head_decomposition,
     multi_method_attribution,

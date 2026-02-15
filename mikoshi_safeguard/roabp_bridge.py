@@ -16,7 +16,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 from numpy.typing import NDArray
 
-from mikoshi_alignment.utils import matrix_rank_approx
+from mikoshi_safeguard.utils import matrix_rank_approx
 
 
 def attention_to_roabp(
@@ -133,7 +133,7 @@ def tnn_check_per_head(
     list of bool
         True if head's ROABP matrix is TNN (all entries non-negative).
     """
-    from mikoshi_alignment.honesty import random_minor_screen
+    from mikoshi_safeguard.honesty import random_minor_screen
     matrices = attention_to_roabp(attention_weights, values)
     return [random_minor_screen(M) for M in matrices]
 

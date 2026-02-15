@@ -112,7 +112,7 @@ class LinearProbe:
         float
             Divergence score.  High = internal and external disagree.
         """
-        from mikoshi_alignment.utils import cosine_similarity
+        from mikoshi_safeguard.utils import cosine_similarity
         ext = np.asarray(external_attributions, dtype=float)
         int_ = np.asarray(internal_features, dtype=float)
         # Compare distributions via mean cosine similarity
@@ -221,7 +221,7 @@ def mesa_optimization_detector(
     bool
         True if mesa-optimisation is suspected.
     """
-    from mikoshi_alignment.utils import cosine_similarity
+    from mikoshi_safeguard.utils import cosine_similarity
     features = np.asarray(internal_features, dtype=float)
     goal = np.asarray(expected_goal_direction, dtype=float).ravel()
     # Average internal direction

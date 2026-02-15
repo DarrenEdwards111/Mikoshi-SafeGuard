@@ -1,7 +1,7 @@
 """Example: wrapping an LLM with Tri-Guard safety."""
 
 import numpy as np
-from mikoshi_alignment import TriGuard
+from mikoshi_safeguard import TriGuard
 
 # Simulated LLM
 def fake_llm(prompt: str) -> str:

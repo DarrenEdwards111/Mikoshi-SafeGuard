@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from mikoshi_alignment.stability import (
+from mikoshi_safeguard.stability import (
     capability_energy,
     safety_tension,
     barrier_lyapunov,

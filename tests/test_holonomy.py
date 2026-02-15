@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from mikoshi_alignment.holonomy import (
+from mikoshi_safeguard.holonomy import (
     compute_connection,
     compute_curvature,
     is_flat,

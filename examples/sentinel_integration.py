@@ -1,7 +1,7 @@
 """Example: Two-Layer Safety with Sentinel + Tri-Guard."""
 
 import numpy as np
-from mikoshi_alignment.sentinel_bridge import SentinelBridge, TwoLayerSafety
+from mikoshi_safeguard.sentinel_bridge import SentinelBridge, TwoLayerSafety
 
 # Create bridge (stub mode — no Sentinel server needed)
 bridge = SentinelBridge()

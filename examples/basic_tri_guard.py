@@ -1,7 +1,7 @@
 """Basic Tri-Guard usage example."""
 
 import numpy as np
-from mikoshi_alignment import TriGuard
+from mikoshi_safeguard import TriGuard
 
 # Create a Tri-Guard instance
 guard = TriGuard(

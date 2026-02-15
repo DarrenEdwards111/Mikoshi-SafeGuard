@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from mikoshi_alignment.polytope import (
+from mikoshi_safeguard.polytope import (
     spdp_matrix,
     spdp_rank,
     inference_polytope,

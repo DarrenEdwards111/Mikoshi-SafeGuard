@@ -21,10 +21,10 @@ Copyright 2025 Mikoshi Ltd. Apache-2.0 License.
 
 __version__ = "0.1.0"
 
-from mikoshi_alignment.tri_guard import TriGuard
-from mikoshi_alignment.honesty import HonestyGuard
-from mikoshi_alignment.stability import WallStabilityGuard
-from mikoshi_alignment.holonomy import HolonomyGuard
+from mikoshi_safeguard.tri_guard import TriGuard
+from mikoshi_safeguard.honesty import HonestyGuard
+from mikoshi_safeguard.stability import WallStabilityGuard
+from mikoshi_safeguard.holonomy import HolonomyGuard
 
 __all__ = [
     "TriGuard",

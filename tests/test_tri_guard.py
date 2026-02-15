@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from mikoshi_alignment.tri_guard import TriGuard
+from mikoshi_safeguard.tri_guard import TriGuard
 
 
 class TestTriGuard:
