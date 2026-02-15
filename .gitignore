@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+.env
+.npmrc
+secrets/
+.keys/
+*.key
+*.pem
+*.der
+.venv/
