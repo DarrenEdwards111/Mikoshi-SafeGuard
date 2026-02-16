@@ -19,17 +19,19 @@ Six improvements:
 Copyright 2025 Mikoshi Ltd. Apache-2.0 License.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from mikoshi_safeguard.tri_guard import TriGuard
 from mikoshi_safeguard.honesty import HonestyGuard
 from mikoshi_safeguard.stability import WallStabilityGuard
 from mikoshi_safeguard.holonomy import HolonomyGuard
+from mikoshi_safeguard.sentinel import Sentinel
 
 __all__ = [
     "TriGuard",
     "HonestyGuard",
     "WallStabilityGuard",
     "HolonomyGuard",
+    "Sentinel",
     "__version__",
 ]

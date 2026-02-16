@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mikoshi-safeguard"
-version = "0.1.0"
+version = "0.2.0"
 description = "Runtime safety verification for AI systems (geometric)"
 authors = [{name = "Mikoshi Ltd", email = "mikoshiuk@gmail.com"}]
 license = {text = "Apache-2.0"}
 requires-python = ">=3.9"
 readme = "README.md"
-keywords = ["ai-safety", "alignment", "tri-guard", "geometric-safety", "geometric-verification"]
+keywords = ["ai-safety", "alignment", "tri-guard", "geometric-safety", "geometric-verification", "sentinel", "llm-security"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -32,5 +32,8 @@ all = ["torch>=1.9", "scipy>=1.7", "matplotlib>=3.4"]
 dev = ["pytest>=7.0", "pytest-cov"]
 
 [project.urls]
-Homepage = "https://github.com/DarrenEdwards111/Mikoshi-AI-Alignment"
-Issues = "https://github.com/DarrenEdwards111/Mikoshi-AI-Alignment/issues"
+Homepage = "https://github.com/DarrenEdwards111/Mikoshi-SafeGuard"
+Issues = "https://github.com/DarrenEdwards111/Mikoshi-SafeGuard/issues"
+
+[tool.setuptools.packages.find]
+include = ["mikoshi_safeguard*"]

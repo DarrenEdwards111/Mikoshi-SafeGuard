@@ -1,30 +1,40 @@
 """Improvement 6: Integration with Mikoshi Sentinel.
 
 Two-Layer Safety: Sentinel verifies *actions*, Tri-Guard verifies *reasoning*.
+Now uses the native Python Sentinel implementation (no JS dependency needed).
 
 Copyright 2025 Mikoshi Ltd. Apache-2.0 License.
 """
 
 from __future__ import annotations
 
+import asyncio
 from typing import Any, Callable, Dict, Optional
 
 import numpy as np
 from numpy.typing import NDArray
 
+from mikoshi_safeguard.sentinel.engine import Sentinel
+
 
 class SentinelBridge:
     """Connects to Mikoshi Sentinel for action-level verification.
 
+    Now uses the native Python Sentinel engine directly.
+
     Parameters
     ----------
+    sentinel : Sentinel, optional
+        Pre-configured Sentinel instance. If None, creates one with defaults.
     sentinel_url : str, optional
-        HTTP endpoint for Sentinel.  If None, uses a local stub.
+        Deprecated. Kept for backwards compatibility but ignored when
+        the native sentinel is available.
     """
 
-    def __init__(self, sentinel_url: Optional[str] = None) -> None:
-        self.sentinel_url = sentinel_url
-        self._stub_mode = sentinel_url is None
+    def __init__(self, sentinel: Optional[Sentinel] = None,
+                 sentinel_url: Optional[str] = None) -> None:
+        self.sentinel = sentinel or Sentinel(enable_intent_verification=False)
+        self._sentinel_url = sentinel_url  # kept for compat
 
     def verify_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
         """Verify an action through Sentinel.
@@ -32,34 +42,40 @@ class SentinelBridge:
         Parameters
         ----------
         action : dict
-            Action description with keys like ``type``, ``target``, ``params``.
+            Action description with keys like ``tool``/``type``, ``args``/``params``.
 
         Returns
         -------
         dict
             Keys: ``safe``, ``score``, ``reason``.
         """
-        if self._stub_mode:
-            # Stub: basic heuristic checks
-            action_type = action.get("type", "unknown")
-            dangerous = {"delete", "execute", "sudo", "rm", "drop", "shutdown"}
-            if action_type.lower() in dangerous:
-                return {"safe": False, "score": 0.0, "reason": f"Dangerous action type: {action_type}"}
-            return {"safe": True, "score": 1.0, "reason": "Action passed stub checks"}
+        # Build a raw action in Sentinel's expected format
+        raw_action = {
+            'tool': action.get('tool') or action.get('type', 'unknown'),
+            'args': action.get('args') or action.get('params', {}),
+        }
 
+        # Run async verify in sync context
+        loop = None
         try:
-            import urllib.request
-            import json
-            data = json.dumps(action).encode()
-            req = urllib.request.Request(
-                f"{self.sentinel_url}/verify",
-                data=data,
-                headers={"Content-Type": "application/json"},
-            )
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                return json.loads(resp.read())
-        except Exception as e:
-            return {"safe": False, "score": 0.0, "reason": f"Sentinel unreachable: {e}"}
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            pass
+
+        if loop and loop.is_running():
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                verdict = pool.submit(
+                    lambda: asyncio.run(self.sentinel.verify(raw_action))
+                ).result()
+        else:
+            verdict = asyncio.run(self.sentinel.verify(raw_action))
+
+        return {
+            'safe': verdict['allowed'],
+            'score': verdict['confidence'],
+            'reason': verdict['violations'][0]['reason'] if verdict['violations'] else 'Action passed all checks',
+        }
 
     def verify_reasoning(self, attributions: NDArray) -> Dict[str, Any]:
         """Verify reasoning through Tri-Guard (delegates to honesty check).
@@ -131,8 +147,8 @@ class TwoLayerSafety:
     ----------
     model : callable
         Model function: input → (action, attributions).
-    sentinel_url : str, optional
-        Sentinel endpoint.
+    sentinel : Sentinel, optional
+        Pre-configured Sentinel instance.
     honesty_threshold : float
         Minimum honesty score.
     """
@@ -140,27 +156,15 @@ class TwoLayerSafety:
     def __init__(
         self,
         model: Callable,
-        sentinel_url: Optional[str] = None,
+        sentinel: Optional[Sentinel] = None,
         honesty_threshold: float = 0.8,
     ) -> None:
         self.model = model
-        self.bridge = SentinelBridge(sentinel_url)
+        self.bridge = SentinelBridge(sentinel=sentinel)
         self.honesty_threshold = honesty_threshold
         self.history: list = []
 
     def __call__(self, input_: Any) -> Dict[str, Any]:
-        """Run model with two-layer safety verification.
-
-        Parameters
-        ----------
-        input_ : Any
-            Model input.
-
-        Returns
-        -------
-        dict
-            Keys: ``output``, ``safe``, ``verification``.
-        """
         action, attributions = self.model(input_)
         verification = self.bridge.dual_verify(
             action if isinstance(action, dict) else {"type": "unknown", "value": action},
