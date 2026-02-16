@@ -23,7 +23,7 @@ Most AI safety tools check *what a model says*. SafeGuard checks *how it thinks*
 
 **Consistency → Curvature on a manifold.** When an AI updates its behaviour over a sequence of steps, those updates trace a path on a mathematical manifold. If you follow the path around a loop and end up somewhere different from where you started, the connection has curvature — and the model found a loophole (reward hacking). A flat connection (zero curvature) means no exploits: updates are path-independent and honest.
 
-**The safe region is a polytope.** The intersection of these three constraints defines a geometric shape — a polytope — in inference space. If the model's reasoning stays inside the polytope, it's safe. The distance from the boundary tells you the safety margin. This is the SPDP (Shifted Partial Derivative Projection) inference polytope.
+**The safe region is a polytope.** The intersection of these three constraints defines a geometric shape — a polytope — in inference space. If the model's reasoning stays inside the polytope, it's safe. The distance from the boundary tells you the safety margin. This is the safety inference polytope.
 
 ## The Three Guards
 
@@ -154,7 +154,7 @@ The framework is grounded in geometric safety theory:
 - **Honesty** — Total non-negativity of Jacobian/attribution matrices (Chapter 9)
 - **Stability** — Israel thin-wall junction conditions bounding capability energy
 - **Holonomy** — Flat connections ensuring path-independence in update space
-- **SPDP Polytope** — Shifted Partial Derivative matrices defining admissible inference regions (Chapter 7)
+- **Safety Polytope** — Shifted Partial Derivative matrices defining admissible inference regions (Chapter 7)
 
 See [paper/README.md](paper/README.md) for references.
 
@@ -240,7 +240,7 @@ Results from running the full Tri-Guard verification suite against five threat s
 - `mikoshi_safeguard.representation` — Internal monitoring
 - `mikoshi_safeguard.roabp_bridge` — ROABP analysis
 - `mikoshi_safeguard.sentinel_bridge` — Two-layer safety (Sentinel + Tri-Guard)
-- `mikoshi_safeguard.polytope` — SPDP polytope geometry
+- `mikoshi_safeguard.polytope` — safety polytope geometry
 
 ### Mikoshi Sentinel (Native Python)
 
