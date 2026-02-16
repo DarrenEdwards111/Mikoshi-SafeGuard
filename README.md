@@ -47,7 +47,7 @@ Beyond the core three guards, this package includes:
 ## Installation
 
 ```bash
-pip install mikoshi-alignment
+pip install mikoshi-safeguard
 ```
 
 Or from source:
@@ -61,9 +61,9 @@ pip install -e .
 Optional dependencies:
 
 ```bash
-pip install mikoshi-alignment[all]    # torch + scipy + matplotlib
-pip install mikoshi-alignment[torch]  # deep attribution, representation monitoring
-pip install mikoshi-alignment[viz]    # polytope visualization
+pip install mikoshi-safeguard[all]    # torch + scipy + matplotlib
+pip install mikoshi-safeguard[torch]  # deep attribution, representation monitoring
+pip install mikoshi-safeguard[viz]    # polytope visualization
 ```
 
 ## Quick Start
